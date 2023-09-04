@@ -1,0 +1,186 @@
+<div class="row">
+    <div class="col-lg-12">
+        <ol class="ibox-title breadcrumb">
+            <li>
+                <a>{{parentPage}}</a>
+            </li>
+            <li class="active">
+                <strong>{{currentPage}}</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <div class="ibox-title">
+                <h5>{{currentPage}}</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <!-- <i class="fa fa-chevron-up"></i> -->
+                    </a>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <button  class="btn btn-primary" (click)="opetemplateCreat(templateCreat,true)">
+                            <i class="fa fa-file-o"></i> Tạo mới</button>
+                    </div>
+                </div>
+                
+            </div> 
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div>
+                          <p-table #dt [value]="CompartmentArr" [paginator]="true" [rows]="10" [scrollable]="true" scrollHeight="700px" [responsive]="true"
+                                [rowsPerPageOptions]="[10,20,50]" [globalFilterFields]="['code','name']">
+                                  <ng-template pTemplate="caption">
+                                      <div class="row">   
+                                          <div class="col-md-6"></div> 
+                                          <div class="col-md-2">
+                                              <p-dropdown [options]="hubStationArr" [(ngModel)]="selectedHub" placeholder="Tìm theo kho hàng" filter="true" [style]="{'width':'100%'}" (onChange)="filterbyHub(selectedHub)" ></p-dropdown> 
+                                          </div>     
+                                          <div class="col-md-2">
+                                            <p-dropdown [options]="selectedShelvesArr" [(ngModel)]="selected_filter_shel" placeholder="Tìm theo kệ hàng" emptyFilterMessage="Không tìm thấy kệ" filter="true" [style]="{'width':'100%'}" (onChange)="filterbyShelves(selected_filter_shel);" ></p-dropdown> 
+                                          </div> 
+                                          <div class="col-md-2 row"> 
+                                              <input type="text" class="input-sm form-control" pInputText size="50" placeholder="Nhập chuỗi tìm kiếm" (input)="dt.filterGlobal($event.target.value, 'contains')" style="height: 22px;"> 
+                                          </div>
+                                      </div>
+                                  </ng-template>
+                                  <ng-template pTemplate="header">
+                                    
+                                      <tr>
+                                        <th  style="text-align: center; width: 100px" *ngIf="selected_filter_shel!=null">
+                                            <a class="btn btn-info" (click)="filterbyShelves(selected_filter_shel);">
+                                                <i class="fa fa-refresh"></i>
+                                            </a>
+                                        </th>
+                                        <th  style="text-align: center; width: 100px" *ngIf="selected_filter_shel==null">
+                                            <a class="btn btn-info" (click)="filterbyHub(selectedHub);">
+                                                <i class="fa fa-refresh"></i>
+                                            </a>
+                                        </th>
+                                        <th class="text-center"  style="width: 70px">
+                                            STT
+                                            <p-sortIcon field="stt"></p-sortIcon>
+                                        </th>
+                                        <th class="text-center"  style="width: 150px;">
+                                            Mã
+                                            <p-sortIcon field="code"></p-sortIcon>
+                                        </th>
+                                        <th class="text-center"  style="width: 150px;">
+                                            Tên
+                                            <p-sortIcon field="name"></p-sortIcon>
+                                        </th>
+                                        <th class="text-center"  style="width: 150px;">
+                                            Kệ                                            
+                                        </th>
+                                        <th class="text-center"  style="width: 200px;">
+                                            Kho
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template let-data pTemplate="body" let-rowIndex="rowIndex">
+                                    <tr [pSelectableRow]="data">
+                                        <td class="text-center"   style="width: 100px;">
+                                          <button class="btn" (click)="opetemplateCreat(templateCreat,false,data.id)"  style="background-color: #23C6C8;  color: white;"> Sửa </button>
+                                          <button class="btn" (click)="openDeleteModel(templateDelete, data)" style="background-color: #ed5565;  color: white;"> Xóa </button>
+                                        </td>
+                                        <td style="width: 70px; text-align: center;">{{rowIndex+1}}</td>
+                                        <td style="width: 150px;">{{data.code}}</td>
+                                        <td style="width: 150px;">{{data.name}}</td>
+                                        <td style="width: 150px;">{{data.shelves?.name}}</td>
+                                        <td style="width: 200px;">{{data.shelves.hub?.name}}</td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #templateDelete>
+    <div class="modal-header" style="padding: 5px; text-align:left;">
+        <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;"
+            (click)="bsModalRefcom.hide()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+    </div>
+    <div class="modal-body" style="padding-top: 10px" >
+        <div class="col-md-12 no-padding">
+            <h4>Bạn có chắc chắn muốn xoá ngăn
+                <b>&quot;{{selectedCompart.name}}&quot;</b>?</h4>
+        </div>
+    </div>
+    <div class="modal-footer" style="padding: 10px;">
+        <button type="button" class="btn btn-danger" (click)=" delete_Compartment(selectedCompart.id)">Xoá</button>
+        <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalRefcom.hide()">Đóng</button>
+    </div>
+  </ng-template> 
+  <!--End Modal-->
+  <ng-template #templateCreat>
+    <div>
+        <div class="modal-header" style="padding: 5px; ">
+            <div class="col-md-6" style="text-align: left;">
+                <h4 *ngIf="iseditDiv"> Thêm ngăn mới </h4>
+                <h4 *ngIf="!iseditDiv">Chỉnh sữa ngăn: {{selectedCompart.code}}</h4>
+            </div>
+            <div class="col-md-6" style="text-align: right;">
+                <button type="button" class="close" data-dismiss="modal" style="margin-right: 3px;" (click)="bsModalCreatRef.hide()">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+                </button>
+            </div>
+        </div>
+        <div class="modal-body edit-body-pup">  
+                <div class="col-sm-12" > 
+                    <div class="col-sm-3">
+                        <label>Kho hàng :</label>
+                        <div class="form-group">
+                            <p-dropdown [options]="hubStationArr" [(ngModel)]="selected_creat_Hub" placeholder="Chọn kho hàng"  [showClear]="false" filter="true" [style]="{'width':'100%'}" (onChange)="load_creat_shel(selected_creat_Hub);" ></p-dropdown>
+                        </div>
+                    </div> 
+                    <div class="col-sm-3">
+                        <label>Kệ hàng : </label>
+                        <div class="form-group">
+                            <p-dropdown [options]="creat_ShelvesArr" [(ngModel)]="selected_Shelves_creat" placeholder="Chọn kệ hàng" [showClear]="false" filter="true" [style]="{'width':'100%'}" ></p-dropdown>
+                        </div>
+                    </div>
+                    <div class="col-sm-3" >
+                        <label>Mã ngăn :</label>
+                        <div class="form-group">
+                            <input type="text" class="input-sm form-control" name="ma_ng_creat"   placeholder="Nhập mã kệ..." [(ngModel)]="creat_compartment_code" >
+                        </div>
+                    </div>
+                    <div class="col-sm-3">
+                        <label>Tên ngăn :</label>
+                        <div class="form-group">
+                            <input type="text" class="input-sm form-control" name="ten_ng_creat"   placeholder="Nhập tên kệ..." [(ngModel)]="creat_compartment_name">
+                        </div>
+                    </div>
+                    
+            </div>
+        </div>
+        <div class="modal-footer"> 
+            <div *ngIf="iseditDiv"> 
+                <button  class="btn btn-primary" (click)="create_Compart();" style="margin-bottom: 0px; ">
+                    <i class="fa fa-plus"></i> Tạo Ngăn</button>
+                <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalCreatRef.hide()">Đóng</button> 
+            </div>
+            <div *ngIf="!iseditDiv"> 
+                <button  class="btn btn-primary" (click)="update_Compart();" style="margin-bottom: 0px;" >
+                    <i class="fa fa-plus"></i> Sửa Ngăn</button>
+                <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalCreatRef.hide()">Đóng</button> 
+            </div>
+        </div>
+    </div>
+  </ng-template> 

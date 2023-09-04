@@ -1,0 +1,197 @@
+<div class="row">
+    <div class="col-lg-12">
+        <ol class="ibox-title breadcrumb">
+            <li>
+                <a>{{parentPage}}</a>
+            </li>
+            <li class="active">
+                <strong>{{currentPage}}</strong>
+            </li>
+        </ol>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="ibox float-e-margins">
+            <!-- <div class="ibox-title">
+                <h5>{{currentPage}}</h5>
+                <div class="ibox-tools">
+                    <a class="collapse-link">
+                        <i class="fa fa-chevron-up"></i>
+                    </a>
+                </div>
+            </div> -->
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-5">
+                        <a *ngIf="isAdd" class="btn btn-primary" (click)="openModel(template)">
+                            <i class="fa fa-file-o"></i> Tạo mới</a>
+                    </div>
+                    <div class="col-sm-4">
+                    </div>
+                    <div class="col-sm-3 ">
+                        <div class="input-group pull-right pull-right">
+                            <!-- <input #filterGb type="text" placeholder="Nhập chuỗi cần tìm ..." class="input-sm form-control" /> -->
+                            <input #filterGb type="text" placeholder="Nhập chuỗi cần tìm ..." class="input-sm form-control" (input)="listDataDepertment.filterGlobal($event.target.value, 'contains')">
+                        </div>                       
+                    </div>
+                </div>
+            </div>
+            <div class="ibox-content">
+                <div class="row">
+                    <div class="col-sm-12">
+                        <div>
+                            <p-table #listDataShift [value]="listData" [scrollable]="true" scrollHeight="700px" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10,20,50]"
+                            [globalFilterFields]="colsShift">
+                                <ng-template pTemplate="header">
+                                    <tr>
+                                        <th pSortableColumn="name">Tên ca
+                                            <p-sortIcon field="name"></p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="startTime">Giờ bắt đầu
+                                            <p-sortIcon field="startTime"></p-sortIcon>
+                                        </th>
+                                        <th pSortableColumn="endTime">Giờ kết thúc
+                                            <p-sortIcon field="endTime"></p-sortIcon>
+                                        </th>
+                                        <!-- <th pSortableColumn="istoDate">Qua ngày
+                                            <p-sortIcon field="istoDate"></p-sortIcon>
+                                        </th> -->
+                                        <th class="col-button2">
+                                            <a class="btn btn-info" (click)="refresh(listDataShift)">
+                                                <i class="fa fa-refresh"></i>
+                                            </a>
+                                        </th>
+                                    </tr>
+                                </ng-template>
+                                <ng-template pTemplate="body" let-Datas>
+                                    <tr>
+                                        <td>{{Datas.name}}</td>
+                                        <td>{{Datas.hourStartTime}}h{{Datas.minuteStartTime}}</td>
+                                        <td>{{Datas.hourEndTime}}h{{Datas.minuteEndTime}}</td>
+                                        <!-- <td>{{Datas.isToDate}}</td> -->
+                                        <td class="col-button2">
+                                            <a *ngIf="isEdit" class="btn btn-info" (click)="openModel(template, Datas)">
+                                                <i class="fa fa-paste"></i> Xem</a>
+                                            <a *ngIf="isDelete" class="btn btn-danger" (click)="openDeleteModel(templateDelete, Datas)">
+                                                <i class="fa fa-trash-o"></i>
+                                                <span class="bold">Xóa</span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </ng-template>
+                            </p-table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--Start Modal-->
+<ng-template #template>
+    <div (keydown)="keyDownFunction($event)">
+        <div class="modal-header" style="padding: 5px; text-align:left;">
+            <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;" (click)="bsModalRef.hide()">
+                <span aria-hidden="true">&times;</span>
+                <span class="sr-only">Close</span>
+            </button>
+            <h5 class="modal-title" style="font-size:20px">{{modalTitle}}</h5>
+        </div>
+        <div class="modal-body" style=" overflow: -webkit-paged-x;" *ngIf="data">
+            <div class="col-md-12 no-padding">
+                <div class="form-group">
+                    <label>Mã</label>
+                    <input type="text" placeholder="Nhập mã" class="input-sm form-control" id="code" [(ngModel)]="data.code" focus="true" />
+                </div>
+                <div class="form-group">
+                    <label>Tên</label>
+                    <input type="text" placeholder="Nhập tên" class="input-sm form-control" id="name" [(ngModel)]="data.name" />
+                </div>
+
+                <div class="col-md-12 no-padding">
+                    <div class="form-group col-md-6" style="padding-left:0px;">
+                        <div class="form-group">
+                            <label>Giờ bắt đầu</label>
+                            <input type="number" placeholder="Nhập giờ" value="myDefaultValue"  class="input-sm form-control"  id="hourStart" [(ngModel)]="data.hourStartTime" />
+                            <!-- <div class="form-group">            
+                              <p-calendar [(ngModel)]="data.startTime"  [showIcon]="false" hourFormat="24" dateFormat="yy/mm/dd" 
+                                [showTime]="true" [inputStyleClass]="'form-control input-sm'"
+                               [style]="{'width': '100%'}" imeFormat="HH:mm:ss" [timeOnly]="true">
+                             </p-calendar>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6" style="padding-left:0px;" >
+                        <div class="form-group" >
+                            <label>Phút</label>
+                            <input type="number" placeholder="Nhập phút"   class="input-sm form-control"  id="minuteStart" [(ngModel)]="data.minuteStartTime" />
+                            <!-- <div class="form-group">            
+                              <p-calendar [(ngModel)]="data.startTime"  [showIcon]="false" hourFormat="24" dateFormat="yy/mm/dd" 
+                                [showTime]="true" [inputStyleClass]="'form-control input-sm'"
+                               [style]="{'width': '100%'}" imeFormat="HH:mm:ss" [timeOnly]="true">
+                             </p-calendar>
+                            </div> -->
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12 no-padding">
+                    <div class="form-group col-md-6" style="padding-left:0px;">
+                        <div class="form-group">
+                            <label>Giờ kết thúc</label>
+                            <input type="number" placeholder="Nhập giờ kết thúc" min="0" max="24" class="input-sm form-control" id="hourEnd" [(ngModel)]="data.hourEndTime" />
+                            <!-- <div class="form-group">
+                                <p-calendar [(ngModel)]="data.endTime"  [showIcon]="false" hourFormat="24" dateFormat="yy/mm/dd"
+                                [showTime]="true" [inputStyleClass]="'form-control input-sm'"
+                               [style]="{'width': '100%'}" imeFormat="HH:mm:ss" [timeOnly]="true">
+                             </p-calendar>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="form-group col-md-6" style="padding-left:0px;">
+                        <div class="form-group">
+                            <label>Phút</label>
+                            <input type="number" placeholder="Nhập phút"   class="input-sm form-control"  id="minuteEnd" [(ngModel)]="data.minuteEndTime" />
+                            <!-- <div class="form-group">            
+                              <p-calendar [(ngModel)]="data.startTime"  [showIcon]="false" hourFormat="24" dateFormat="yy/mm/dd" 
+                                [showTime]="true" [inputStyleClass]="'form-control input-sm'"
+                               [style]="{'width': '100%'}" imeFormat="HH:mm:ss" [timeOnly]="true">
+                             </p-calendar>
+                            </div> -->
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Qua ngày</label>
+                        <input type="checkbox" [checked]="index === 0" [(ngModel)]="data.isToDate" />
+                    </div>  
+                </div>                             
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalRef.hide()">Đóng</button>
+            <button type="button" class="btn btn-primary" (click)="save()">Lưu</button>
+        </div>
+    </div>
+</ng-template>
+
+<ng-template #templateDelete>
+    <div class="modal-header" style="padding: 5px; text-align:left;">
+        <button type="button" class="close" data-dismiss="modal" style="margin:3px 10px 0 0;" (click)="bsModalRef.hide()">
+            <span aria-hidden="true">&times;</span>
+            <span class="sr-only">Close</span>
+        </button>
+    </div>
+    <div class="modal-body" style="overflow:hidden;" *ngIf="data">
+        <div class="col-md-12 no-padding">
+            <h4>Bạn có chắc chắn muốn xoá
+                <b>&quot;{{data.name}}&quot;</b>?</h4>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-white" data-dismiss="modal" (click)="bsModalRef.hide()">Đóng</button>
+        <button type="button" class="btn btn-danger" (click)="delete()">Xoá</button>
+    </div>
+</ng-template>
+<!--End Modal-->
